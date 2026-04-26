@@ -14,30 +14,31 @@ This project is a high-performance demonstration of **Asset Pipeline Engineering
 
 - **Pipeline Automation**: Seamlessly processing 1,900+ creative files into a structured database.
 - **Hardware-Aware Design**: Optimized memory handling for local GPU inference.
-- **Remote Infrastructure**: Successfully deployed via a **Remote SSH tunnel from the UK to a GPU workstation in Japan**, demonstrating zero-latency remote workflow management.
+- **Remote Infrastructure**: Deployed via a **Remote SSH tunnel (UK to Japan)**, demonstrating proficiency in managing remote technical workflows.
 
-### 📐 Technical Philosophy & "Easter Eggs"
-While built as a general tool for the Obsidian community, this project draws heavy inspiration from the collaborative spirit found in **Edinburgh’s world-class game development scene**. The architecture reflects a deep respect for tools that empower artists and animators, mirroring the mission of top-tier entertainment studios to "support creative disciplines through technology."
-
-*If you are reading this in a certain state-of-the-art studio in Edinburgh — I suspect we speak the same technical language.* 😉
+### 📐 Philosophy: Tools for Creators
+The design of this pipeline is rooted in a deep respect for creative workflows. Inspired by the production-minds and high-tech standards encountered in **Edinburgh's creative scene**, this project priorities:
+- **Scalability**: Reducing the overhead of managing thousands of assets.
+- **Data Integrity**: Maintaining strict relationships between raw data and descriptive metadata.
+- **Empowerment**: Building technology that "gets out of the way," allowing creators to focus on their craft.
 
 ---
 
 ## 🛠️ Key Features
-- **Intelligent Sidecar Generation**: Generates `.md` metadata files compatible with Obsidian Dataview converter.
-- **Dynamic Renaming**: Automatically generates descriptive titles while preserving the original filename.
+- **Intelligent Sidecar Generation**: Generates `.md` metadata files compatible with Obsidian Dataview.
+- **Dynamic Renaming**: Automatically generates descriptive titles while preserving the original filename for cross-reference.
 - **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes during inference.
-- **Metadata Standardization**: Enforces English tags for robust global searchability.
+- **Standardized Indexing**: Enforces English tags for robust global searchability.
 
 ## 🏗️ Technical Challenges & Solutions
 
-### 1. VRAM & Hardware Constraints
-**Problem**: Processing 4K/8K images directly on a local 8B VLM caused GPU OOM (Out Of Memory) errors.
-**Solution**: Integrated a real-time downsampling pipeline using `Pillow`, reducing peak VRAM usage by 70% while maintaining 99% tagging accuracy.
+### 1. Resource Constraint Management
+**Problem**: Processing high-resolution images on a local 8B VLM caused GPU memory exhaustion.
+**Solution**: Integrated a real-time downsampling pipeline, reducing peak VRAM usage by 70% while maintaining accuracy.
 
 ### 2. File Indexing Congestion
-**Problem**: Rapid creation of 1,900 assets in a synchronized vault caused UI freezing on the client machine.
-**Solution**: Implemented a throttling mechanism to allow the filesystem indexer and network sync to process changes without performance degradation.
+**Problem**: Rapid creation of 1,900 assets caused indexing bottlenecks in the synchronized vault.
+**Solution**: Implemented a calibrated throttling mechanism to ensure filesystem stability during high-volume operations.
 
 ---
 
@@ -45,59 +46,45 @@ While built as a general tool for the Obsidian community, this project draws hea
 1. Load a vision model in **LM Studio**.
 2. `pip install -r requirements.txt`
 3. Update `ASSETS_DIR` in `obsidian_asset_tagger.py`.
-4. Run: `python3 obsidian_asset_tagger.py`
+4. Run script.
 
 <br>
 <hr>
 <br>
 
-# 🇯🇵 日本語全文解説
+# 🇯🇵 日本語解説
 
 ## 🏗️ プロフェッショナルな開発支援（Tools）アーキテクチャ
 
-本プロジェクトは、インデックス化されていない膨大なビジュアルコンテンツを管理するという実務上のボトルネックを解消するために設計された、**アセット・パイプライン・エンジニアリング**の高性能な実証例です。
+本プロジェクトは、インデックス化されていない膨大なビジュアルコンテンツを管理するという実務上の課題を解消するために設計された、**アセット・パイプライン・エンジニアリング**の高性能な実証例です。
 
 - **パイプラインの自動化**: 1,900以上のクリエイティブファイルを、構造化されたデータベースへシームレスに変換します。
-- **ハードウェアを意識した設計**: ローカルGPUでの推論におけるメモリ処理を最適化。
-- **リモート・インフラストラクチャ**: **イギリス(UK)から日本のGPUワークステーションへRemote SSHトンネル経由で接続**し、ゼロレイテンシのリモートワークフロー管理を実現。
+- **ハードウェアを意識した設計**: ローカルGPU推論におけるメモリ処理を最適化。
+- **リモート・インフラストラクチャ**: イギリス(UK)から日本の拠点へ**Remote SSHトンネル経由で接続**し、遠隔地からの技術ワークフロー管理を実現。
 
-### 📐 技術哲学と「隠しメッセージ」
-Obsidianコミュニティ向けの汎用ツールとして構築されていますが、本プロジェクトの設計思想は、**エディンバラ（スコットランド）の世界的ゲーム開発シーン**に見られるコラボレーション精神から強い影響を受けています。アーティストやアニメーターの作業効率を最大化する「ツールへの深い敬意」を形にしており、それは「テクノロジーを通じてクリエイティブな規律を支える」という一流エンターテインメントスタジオのミッションを反映したものです。
-
-*もし、あなたがエディンバラにある「最先端のスタジオ」でこれを読んでいるなら……私たちは同じ技術言語を話しているはずです。* 😉
+### 📐 設計哲学：クリエイターのためのツール
+このパイプラインの設計は、クリエイティブなワークフローへの深い敬意に基づいています。**エディンバラ（スコットランド）の先進的なテックシーン**で触れた「プロダクション基準」の考え方に触発され、以下の要素を優先しています。
+- **拡張性**: 膨大なアセット管理に伴うオーバーヘッドを削減。
+- **データ整合性**: 生データとメタデータの関係を厳格に維持。
+- **エンパワーメント**: テクノロジーを「黒子」として機能させ、クリエイターが創作そのものに集中できる環境を構築。
 
 ---
 
 ## 🛠️ 主な機能
-- **インテリジェントなサイドカー生成**: ObsidianのDataviewと互換性のあるメタデータ（.md）を生成。
-- **動的なファイル命名**: 元の画像ファイル名を維持してデータ整合性を保ちつつ、AIが内容に基づいた短いタイトルを自動付与。
-- **VRAM最適化**: 推論時のGPUクラッシュを防ぐため、メモリ上での画像リサイズ・パイプラインを実装。
-- **メタデータの標準化**: グローバルな検索性を確保するため、タグを英語に統一する機能を搭載。
+- **インテリジェントなサイドカー生成**: Obsidian Dataviewと互換性のあるメタデータを自動作成。
+- **動的な命名規則**: 元のファイル名を維持しつつ、AIが内容に基づいたタイトルを自動付与。
+- **VRAM最適化**: メモリ上でのリサイズ・パイプラインにより、安定した動作を実現。
+- **標準化された検索性**: グローバルな検索に対応するため、タグを英語に統一。
 
 ## 🏗️ 技術的課題と解決策
 
-### 1. VRAMとハードウェアの制約
-**課題**: 4K/8Kの高解像度画像をローカルの8B VLMで直接処理すると、GPUのメモリ不足（OOM）エラーやAPIのクラッシュが発生した。
-**解決策**: `Pillow` を用いたリアルタイム・ダウンサンプリング・パイプラインを統合。推論精度を99%維持したまま、ピーク時のVRAM使用量を70%削減。
+### 1. リソース制約の管理
+**課題**: 高解像度画像を直接処理することによるGPUメモリの不足。
+**解決策**: リアルタイム・ダウンサンプリングを実装し、精度を損なうことなくVRAM使用量を70%削減。
 
-### 2. ファイルインデックスの混雑
-**課題**: 同期されたヴォルト内で1,900個のアセットを高速に生成すると、クライアントマシンのUIがフリーズする現象が発生した。
-**解決策**: スロットリング機構を実装し、ファイルシステムのインデクサーとネットワーク同期がパフォーマンスを低下させることなく変更を処理できるように調整。
-
----
-
-## 🚀 セットアップ
-1. **LM Studio** でビジョンモデル（Qwen3-VL等）をロード。
-2. `pip install -r requirements.txt`
-3. `obsidian_asset_tagger.py` 内の `ASSETS_DIR` を実際のパスに更新。
-4. 実行: `python3 obsidian_asset_tagger.py`
+### 2. ファイル・インデックスの混雑回避
+**課題**: 大量のアセット生成に伴うファイルシステムのボトルネック。
+**解決策**: スロットリング機構を導入し、大規模な自動処理中もシステムの安定性を確保。
 
 ---
-
-## 📈 実績
-- **検索性**: 「内容不明」から「自然言語による検索可能」な状態へ。
-- **整理**: カテゴリ分け（アート、自然、テクノロジー等）を完全に自動化。
-- **インフラ**: 国境を越えたリモートリンク上での高負荷処理を実現。
-
----
-*世界クラスのアセット管理とテクニカルサポートへの情熱を込めて。*
+*Created with a passion for robust asset pipelines and creative support.*
