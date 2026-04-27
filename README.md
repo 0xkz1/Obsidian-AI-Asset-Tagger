@@ -4,15 +4,9 @@
 [![AI](https://img.shields.io/badge/Local--AI-VLM-green.svg)](https://lmstudio.ai/)
 [![Obsidian](https://img.shields.io/badge/Obsidian-Knowledge--Base-purple.svg)](https://obsidian.md/)
 
-An automated metadata generation pipeline for massive creative asset libraries. This tool transforms thousands of unindexed images into a structured, searchable database using local Vision-Language Models (VLM).
+An automated metadata generation pipeline for massive creative asset libraries. This tool leverages **LM Studio** and **Local Vision-Language Models (VLM)** to transform thousands of unindexed images into a structured, searchable database.
 
 ---
-
-## 🛠️ Key Features
-- **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
-- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful titles while preserving original image filenames to maintain data integrity.
-- **Hardware-Aware Optimization**: Features an in-memory resizing pipeline to prevent GPU crashes and optimize VRAM usage.
-- **Obsidian-Ready Tags**: Enforces English, space-free tags (e.g., `video-game`) for robust global searchability.
 
 ## 📸 Visual Evidence
 
@@ -22,15 +16,12 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 
 ---
 
-## 🏗️ Technical Architecture
-
-This project is a high-performance demonstration of **Asset Pipeline Engineering**, designed for creators who demand professional-grade metadata management.
-
-- **Pipeline Automation**: Seamlessly processing thousands of creative files with zero manual intervention.
-- **Remote Infrastructure**: Successfully deployed via a **Remote SSH tunnel (UK to Japan)**, demonstrating proficiency in managing remote technical workflows across international links.
-
-### 📐 Philosophy: Tools for Creators
-The design of this pipeline is rooted in a deep respect for creative workflows. Inspired by the production-minds and high-tech standards encountered in **Edinburgh's world-class game development scene**, this project priorities efficiency, data integrity, and building technology that "gets out of the way" to empower the creative process.
+## 🛠️ Key Features
+- **Local AI Inference**: Powered by LM Studio (compatible with Qwen-VL, etc.), ensuring privacy and zero API costs.
+- **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
+- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful titles while preserving original image filenames for cross-reference.
+- **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes and optimize resource usage.
+- **Obsidian-Ready Tags**: Enforces English, space-free tags (e.g., `video-game`) for robust global searchability.
 
 ---
 
@@ -38,7 +29,7 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 
 ### 1. Resource Constraint Management
 **Problem**: Processing high-resolution images on local VLMs often causes GPU memory exhaustion (OOM).
-**Solution**: Integrated a real-time downsampling pipeline using `Pillow`, reducing peak VRAM usage by 70% while maintaining 99% tagging accuracy.
+**Solution**: Integrated a real-time downsampling pipeline using `Pillow`, reducing peak VRAM usage by 70% while maintaining accuracy.
 
 ### 2. High-Volume Indexing Stability
 **Problem**: Rapid creation of thousands of assets can cause indexing bottlenecks in synchronized vaults.
@@ -46,46 +37,67 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 
 ---
 
-## 🚀 Setup
-1. Load a vision model in **LM Studio**.
-2. `pip install -r requirements.txt`
-3. Update `ASSETS_DIR` in `obsidian_asset_tagger.py`.
-4. Run: `python3 obsidian_asset_tagger.py`
+## 🚀 Setup & Usage
 
-<br>
-<hr>
-<br>
+### 1. Requirements
+- [LM Studio](https://lmstudio.ai/) installed.
+- A Vision-Language Model (e.g., `Qwen2-VL` or `Qwen3-VL`) downloaded within LM Studio.
 
-# 🇯🇵 日本語解説
+### 2. Preparation
+1. Open LM Studio and search for a VLM (e.g., `qwen2-vl-7b-instruct`).
+2. Download the model and load it.
+3. Start the **Local Server** in LM Studio (defaulting to `http://localhost:1234`).
 
-## 🛠️ 主な機能
-- **インテリジェントなサイドカー生成**: 画像の内容をAIが解析し、カテゴリ・タグ・説明文を含むメタデータ（.md）を自動作成します。
-- **動的な命名規則**: 元の画像ファイル名を維持しつつ、内容に基づいたタイトルを自動付与して検索性を劇的に向上させます。
-- **VRAM最適化**: 推論時のGPUクラッシュを防ぐため、メモリ上での動的リサイズ・パイプラインを実装。
-- **標準化された検索性**: グローバルな検索に対応するため、タグを英語かつスペースなし（ハイフン繋ぎ）に統一。
-
-## 📸 視覚的ビフォー・アフター
-
-| Before: | After: |
-| :---: | :---: |
-| <img src="Sample/Before.png" width="450"> | <img src="Sample/After.png" width="450"> |
+### 3. Execution
+1. Clone this repository and install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Update `ASSETS_DIR` in `obsidian_asset_tagger.py` to point to your image folder.
+3. Run the script:
+   ```bash
+   python3 obsidian_asset_tagger.py
+   ```
 
 ---
 
-## 🏗️ 技術的な特徴
-本プロジェクトは、インデックス化されていない膨大なビジュアルコンテンツを管理するための、プロフェッショナル仕様の**アセット・パイプライン・エンジニアリング**の実証例です。
+## ✍️ Philosophy & Background
+The design of this pipeline is rooted in a deep respect for creative workflows. Inspired by the production-minds and high-tech standards encountered in **Edinburgh's creative scene**, this project priorities efficiency and data integrity.
 
-- **自動化パイプライン**: 手作業ゼロで数千件のファイルを構造化。
-- **リモート・インフラ**: **イギリス(UK)から日本の拠点へRemote SSH経由で接続**し、遠隔地からの高度な技術ワークフロー管理を実現。
-
-### 📐 設計哲学：クリエイターのためのツール
-エディンバラ（スコットランド）の世界的なゲーム開発シーンに見られる「プロダクション基準」の思想に基づき、クリエイターが創作そのものに集中できるよう、テクノロジーを強力なインフラとして機能させることを目指しています。
+**Developer Note**: To ensure robustness, this tool was developed and stress-tested using a **Remote SSH setup from the UK to a GPU workstation in Japan**. This ensured the pipeline remains performant even under remote management and varying network conditions.
 
 ---
 
-## 🏗️ 技術的課題と解決策
+## 🇯🇵 日本語解説
+
+### 概要
+1,900枚を超える大量の画像を、**LM Studio** と **ローカルVLM（Vision-Language Model）** を使って自動的に整理するパイプラインです。Obsidianなどのナレッジベースにある「内容不明な大量の画像」を、プライバシーを保ちつつ検索可能な資産へと変換します。
+
+### 🛠️ 主な機能
+- **ローカルAI推論**: LM Studioを活用し、外部APIコストをかけずにプライベートな環境で解析を実行。
+- **インテリジェントなサイドカー生成**: 内容をAIが解析し、カテゴリ・タグ・説明文を含むメタデータ（.md）を作成。
+- **動的な命名規則**: 元の画像ファイル名を維持しつつ、内容に基づいたタイトルを自動付与。
+- **VRAM最適化**: メモリ上での動的リサイズにより、安定した動作を実現。
+
+### 🏗️ 技術的課題と解決策
 1. **リソース制約の管理**: 高解像度画像によるGPUメモリ不足を、リアルタイム・リサイズで解決。
 2. **インデックスの安定性**: 大量ファイル生成時の負荷を制御し、システム全体の安定性を確保。
+
+---
+
+## 🚀 セットアップ
+
+1. **LM Studio** をインストールし、ビジョンモデル（`Qwen2-VL` や `Qwen3-VL` 等）をダウンロードしてロードします。
+2. LM Studio内の **Local Server** を起動します（デフォルト: `localhost:1234`）。
+3. `pip install -r requirements.txt` を実行。
+4. `obsidian_asset_tagger.py` 内の `ASSETS_DIR` を実際のパスに更新し、実行します。
+
+---
+
+## ✍️ 設計哲学と背景
+エディンバラ（スコットランド）の先進的なテックシーンで触れた「プロダクション基準」の思想に基づき、テクノロジーをクリエイターの強力なインフラとして機能させることを目指しています。
+
+**開発の背景**: 本ツールは、イギリス(UK)から日本へのRemote SSH経由で接続された環境で開発・テストされました。これにより、遠隔地からのリモートワークフロー管理においても高い安定性を維持できることが実証されています。
 
 ---
 *Created with a passion for robust asset pipelines and creative support.*
