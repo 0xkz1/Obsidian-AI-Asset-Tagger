@@ -4,7 +4,7 @@
 [![AI](https://img.shields.io/badge/Local--AI-VLM-green.svg)](https://lmstudio.ai/)
 [![Obsidian](https://img.shields.io/badge/Obsidian-Knowledge--Base-purple.svg)](https://obsidian.md/)
 
-An automated metadata generation pipeline for massive creative asset libraries. This tool leverages **LM Studio** and **Local Vision-Language Models (VLM)** to transform thousands to tens of thousands of unindexed images into a structured, searchable database.
+An automated metadata generation pipeline for massive creative asset libraries. This tool leverages **LM Studio** and **Local Vision-Language Models (VLM)** to transform thousands to tens of thousands of unindexed images into a structured, searchable English-language database.
 
 ---
 
@@ -19,7 +19,8 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 ## 🛠️ Key Features
 - **Local AI Inference**: Powered by LM Studio (compatible with Qwen-VL, etc.), ensuring privacy and zero API costs.
 - **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
-- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful titles while preserving original image filenames for cross-reference.
+- **English-Only Metadata**: Generates all titles, tags, and descriptions in **English** for global standard indexing.
+- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful English titles while preserving original image filenames for cross-reference.
 - **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes and optimize resource usage for large-scale processing.
 - **Obsidian-Ready Tags**: Enforces English, space-free tags (e.g., `video-game`) for robust global searchability.
 
@@ -71,12 +72,13 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 ## 🇯🇵 日本語解説
 
 ### 概要
-数千枚から数万枚に及ぶ大量の画像を、**LM Studio** と **ローカルVLM（Vision-Language Model）** を使って自動的に整理するパイプラインです。Obsidianなどのナレッジベースにある「内容不明な大量の画像」を、プライバシーを保ちつつ検索可能な資産へと変換します。
+数千枚から数万枚に及ぶ大量の画像を、**LM Studio** と **ローカルVLM（Vision-Language Model）** を使って自動的に整理するパイプラインです。Obsidianなどのナレッジベースにある「内容不明な大量の画像」を、プライバシーを保ちつつ検索可能な**英語データベース**へと変換します。
 
 ### 🛠️ 主な機能
 - **ローカルAI推論**: LM Studioを活用し、外部APIコストをかけずにプライベートな環境で解析を実行。
 - **インテリジェントなサイドカー生成**: 内容をAIが解析し、カテゴリ・タグ・説明文を含むメタデータ（.md）を作成。
-- **動的な命名規則**: 元の画像ファイル名を維持しつつ、内容に基づいたタイトルを自動付与。
+- **英語メタデータの生成**: タイトル、タグ、説明文をすべて**英語**で生成し、グローバルなインデックス標準に対応。
+- **動的な命名規則**: 元の画像ファイル名を維持しつつ、内容に基づいた英語タイトルを自動付与。
 - **VRAM最適化**: メモリ上での動的リサイズにより、大規模な一括処理でも安定した動作を実現。
 
 ### 🏗️ 技術的課題と解決策

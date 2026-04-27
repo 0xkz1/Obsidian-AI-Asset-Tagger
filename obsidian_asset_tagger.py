@@ -1,16 +1,15 @@
 """
 Obsidian AI Asset Tagger
 ========================
-Automated metadata pipeline for creative assets using Local Vision-Language Models (VLM).
+Automated metadata generation pipeline for creative asset libraries using Local Vision-Language Models (VLM).
 
-Developed to categorize and tag thousands of images in an Obsidian vault 
-without breaking existing internal links.
+Designed to transform thousands of unindexed images into a structured, searchable English-language database.
 
 Key Features:
-- Local Inference: Uses LM Studio / OpenAI-compatible API for privacy and zero cost.
-- Asset Pipeline: Resizes images in-memory to optimize VRAM usage and processing speed.
-- Smart Renaming: Generates descriptive titles for sidecar files based on AI analysis.
-- Remote Ready: Designed and tested over SSH from UK to a GPU-workstation in Japan.
+- Local Inference: Uses LM Studio (compatible with Qwen-VL) for privacy and speed.
+- All-English Metadata: Generates titles, tags, and descriptions exclusively in English.
+- Asset Pipeline: High-performance in-memory processing to handle massive libraries.
+- Remote Ready: Developed via SSH from UK to Japan, optimized for remote management.
 """
 
 import os
@@ -30,25 +29,27 @@ except ImportError:
     HAS_PILLOW = False
 
 # --- CONFIGURATION ---
-# Default to LM Studio local server
 API_URL = "http://localhost:1234/v1/chat/completions"
-# Path to your Obsidian assets folder
 ASSETS_DIR = "/home/kz003/atelier/obsidian-vault/11_assets_OB"
-# VLM Model Identifier (Change based on your LM Studio settings)
 MODEL_ID = "qwen/qwen3-vl-8b"
-# Max dimension for image processing (smaller = faster / less VRAM)
 MAX_IMAGE_SIZE = 768
 # ---------------------
 
 IMAGE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif')
 
 def sanitize_filename(name):
-    """Removes illegal characters for cross-platform filename safety."""
-    name = re.sub(r'[\\/*?Internal:"<>|]', "", name)
+    """Clean filename for cross-platform compatibility."""
+    name = re.sub(r'[\\/*?:"<>|]', "", name)
     return name.strip()
 
+def sanitize_tags(tags):
+    """Format tags for Obsidian (lowercase, no spaces, use hyphens)."""
+    if isinstance(tags, list):
+        return [tag.strip().replace(" ", "-").lower() for tag in tags if tag]
+    return []
+
 def encode_image_resized(image_path):
-    """Resizes image to target max dimension and encodes to Base64."""
+    """Resize image and convert to Base64."""
     if not HAS_PILLOW:
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode('utf-8')
@@ -61,29 +62,23 @@ def encode_image_resized(image_path):
             img.save(buf, format="JPEG", quality=85)
             return base64.b64encode(buf.getvalue()).decode('utf-8')
     except Exception as e:
-        print(f"  [Error] Failed to process image {image_path}: {e}")
+        print(f"  [Error] {e}")
         return None
 
 def analyze_image(image_path):
-    """Sends image to VLM for categorization and tagging."""
+    """Analyze image using local VLM API."""
     base64_data = encode_image_resized(image_path)
     if not base64_data:
         return None
 
     prompt = """
-Analyze this image and provide a structured classification:
-1. Short descriptive title in Japanese (max 15 chars).
-2. Category: Photography, Art, Nature, Tech, Document, Finance, People, or Gaming.
-3. Tags: 3-5 keywords in English only.
-4. Description: One sentence in Japanese.
+Analyze this image and provide a structured English classification:
+1. title: Short English title (max 5 words).
+2. category: Photography, Art, Nature, Tech, Document, Finance, People, or Gaming.
+3. tags: 3-5 keywords in English (use hyphens for spaces).
+4. description: One sentence English description.
 
-Output ONLY JSON format:
-{
-  "title": "Title",
-  "category": "Category",
-  "tags": ["tag1", "tag2"],
-  "description": "Description"
-}
+Output ONLY JSON format. All values must be in English.
 """
     payload = {
         "model": MODEL_ID,
@@ -101,7 +96,6 @@ Output ONLY JSON format:
 
     try:
         response = requests.post(API_URL, json=payload, timeout=60)
-        response.raise_for_status()
         content = response.json()['choices'][0]['message']['content']
         match = re.search(r'\{.*\}', content, re.DOTALL)
         if match:
@@ -116,34 +110,32 @@ def main():
         return
 
     files = sorted([f for f in os.listdir(ASSETS_DIR) if f.lower().endswith(IMAGE_EXTENSIONS)])
-    print(f"Found {len(files)} creative assets. Starting pipeline...")
+    print(f"Syncing {len(files)} assets (English Pipeline)...")
 
     for filename in files:
         base_name = os.path.splitext(filename)[0]
         img_path = os.path.join(ASSETS_DIR, filename)
         
-        # Check if a sidecar file already exists for this image
+        # Check if MD file exists
         existing_md = [f for f in os.listdir(ASSETS_DIR) if f.startswith(base_name) and f.endswith(".md")]
         if existing_md:
-            # Skip if already processed in latest Descriptive Format
+            # For brevity, this version skips existing titled files.
+            # In your local scratch script, we added logic to 'fix' Japanese.
             if " - " in existing_md[0]:
                 continue
         
         print(f"Analyzing: {filename}...")
         analysis = analyze_image(img_path)
-        
-        if not analysis:
-            print(f"  -> Skipping {filename}")
-            continue
+        if not analysis: continue
 
         title = sanitize_filename(analysis.get('title', 'Untitled'))
+        tags = sanitize_tags(analysis.get('tags', []))
         md_filename = f"{base_name} - {title}.md"
-        md_path = os.path.join(ASSETS_DIR, md_filename)
-
+        
         metadata = f"""---
 title: {title}
 category: {analysis.get('category', 'Unclassified')}
-tags: {analysis.get('tags', [])}
+tags: {tags}
 cover: "{filename}"
 processed_at: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 ---
@@ -151,11 +143,11 @@ processed_at: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
 {analysis.get('description', '')}
 """
-        with open(md_path, "w", encoding="utf-8") as f:
+        with open(os.path.join(ASSETS_DIR, md_filename), "w", encoding="utf-8") as f:
             f.write(metadata)
         
         print(f"  -> Created: {md_filename}")
-        time.sleep(0.1)  # Throttling to prevent IO congestion
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     main()
