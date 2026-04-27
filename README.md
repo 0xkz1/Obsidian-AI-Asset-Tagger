@@ -10,15 +10,15 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 
 ## 🛠️ Key Features
 - **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
-- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful titles (e.g., `Sunset in Edinburgh.md`) while preserving original image filenames to maintain data integrity.
+- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful titles while preserving original image filenames to maintain data integrity.
 - **Hardware-Aware Optimization**: Features an in-memory resizing pipeline to prevent GPU crashes and optimize VRAM usage.
 - **Obsidian-Ready Tags**: Enforces English, space-free tags (e.g., `video-game`) for robust global searchability.
 
-## 📸 Visual Evidence (Before & After)
+## 📸 Visual Evidence
 
-| Before: Unorganized Assets | After: Structured Database |
+| Before: | After: |
 | :---: | :---: |
-| ![Before](Sample/Before.png) | ![After](Sample/After.png) |
+| <img src="Sample/Before.png" width="450"> | <img src="Sample/After.png" width="450"> |
 
 ---
 
@@ -40,7 +40,7 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 **Problem**: Processing high-resolution images on local VLMs often causes GPU memory exhaustion (OOM).
 **Solution**: Integrated a real-time downsampling pipeline using `Pillow`, reducing peak VRAM usage by 70% while maintaining 99% tagging accuracy.
 
-### 2. File Indexing Congestion
+### 2. High-Volume Indexing Stability
 **Problem**: Rapid creation of thousands of assets can cause indexing bottlenecks in synchronized vaults.
 **Solution**: Implemented a calibrated throttling mechanism to ensure filesystem stability during large-scale operations.
 
@@ -66,9 +66,9 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 
 ## 📸 視覚的ビフォー・アフター
 
-| 以前：未整理のアセット | 以後：構造化されたデータベース |
+| Before: | After: |
 | :---: | :---: |
-| ![Before](Sample/Before.png) | ![After](Sample/After.png) |
+| <img src="Sample/Before.png" width="450"> | <img src="Sample/After.png" width="450"> |
 
 ---
 
