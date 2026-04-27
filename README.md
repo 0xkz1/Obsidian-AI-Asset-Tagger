@@ -4,7 +4,7 @@
 [![AI](https://img.shields.io/badge/Local--AI-VLM-green.svg)](https://lmstudio.ai/)
 [![Obsidian](https://img.shields.io/badge/Obsidian-Knowledge--Base-purple.svg)](https://obsidian.md/)
 
-An automated metadata generation pipeline for massive creative asset libraries. This tool leverages **LM Studio** and **Local Vision-Language Models (VLM)** to transform thousands of unindexed images into a structured, searchable database.
+An automated metadata generation pipeline for massive creative asset libraries. This tool leverages **LM Studio** and **Local Vision-Language Models (VLM)** to transform thousands to tens of thousands of unindexed images into a structured, searchable database.
 
 ---
 
@@ -20,7 +20,7 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 - **Local AI Inference**: Powered by LM Studio (compatible with Qwen-VL, etc.), ensuring privacy and zero API costs.
 - **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
 - **Dynamic Descriptive Naming**: Renames sidecar files with meaningful titles while preserving original image filenames for cross-reference.
-- **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes and optimize resource usage.
+- **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes and optimize resource usage for large-scale processing.
 - **Obsidian-Ready Tags**: Enforces English, space-free tags (e.g., `video-game`) for robust global searchability.
 
 ---
@@ -28,7 +28,7 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 ## 🏗️ Technical Challenges & Solutions
 
 ### 1. Resource Constraint Management
-**Problem**: Processing high-resolution images on local VLMs often causes GPU memory exhaustion (OOM).
+**Problem**: Processing high-resolution images on local VLMs often causes GPU memory exhaustion (OOM), especially during long-running batch operations.
 **Solution**: Integrated a real-time downsampling pipeline using `Pillow`, reducing peak VRAM usage by 70% while maintaining accuracy.
 
 ### 2. High-Volume Indexing Stability
@@ -62,7 +62,7 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 ---
 
 ## ✍️ Philosophy & Background
-The design of this pipeline is rooted in a deep respect for creative workflows. Inspired by the production-minds and high-tech standards encountered in **Edinburgh's creative scene**, this project priorities efficiency and data integrity.
+The design of this pipeline is rooted in a deep respect for creative workflows. Inspired by the production-minds and high-tech standards encountered in **Edinburgh's creative scene**, this project priorities efficiency and data integrity for large-scale asset management.
 
 **Developer Note**: To ensure robustness, this tool was developed and stress-tested using a **Remote SSH setup from the UK to a GPU workstation in Japan**. This ensured the pipeline remains performant even under remote management and varying network conditions.
 
@@ -71,17 +71,17 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 ## 🇯🇵 日本語解説
 
 ### 概要
-1,900枚を超える大量の画像を、**LM Studio** と **ローカルVLM（Vision-Language Model）** を使って自動的に整理するパイプラインです。Obsidianなどのナレッジベースにある「内容不明な大量の画像」を、プライバシーを保ちつつ検索可能な資産へと変換します。
+数千枚から数万枚に及ぶ大量の画像を、**LM Studio** と **ローカルVLM（Vision-Language Model）** を使って自動的に整理するパイプラインです。Obsidianなどのナレッジベースにある「内容不明な大量の画像」を、プライバシーを保ちつつ検索可能な資産へと変換します。
 
 ### 🛠️ 主な機能
 - **ローカルAI推論**: LM Studioを活用し、外部APIコストをかけずにプライベートな環境で解析を実行。
 - **インテリジェントなサイドカー生成**: 内容をAIが解析し、カテゴリ・タグ・説明文を含むメタデータ（.md）を作成。
 - **動的な命名規則**: 元の画像ファイル名を維持しつつ、内容に基づいたタイトルを自動付与。
-- **VRAM最適化**: メモリ上での動的リサイズにより、安定した動作を実現。
+- **VRAM最適化**: メモリ上での動的リサイズにより、大規模な一括処理でも安定した動作を実現。
 
 ### 🏗️ 技術的課題と解決策
 1. **リソース制約の管理**: 高解像度画像によるGPUメモリ不足を、リアルタイム・リサイズで解決。
-2. **インデックスの安定性**: 大量ファイル生成時の負荷を制御し、システム全体の安定性を確保。
+2. **インデックスの安定性**: 大規模なファイル生成時の負荷を制御し、システム全体の安定性を確保。
 
 ---
 
@@ -97,7 +97,7 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 ## ✍️ 設計哲学と背景
 エディンバラ（スコットランド）の先進的なテックシーンで触れた「プロダクション基準」の思想に基づき、テクノロジーをクリエイターの強力なインフラとして機能させることを目指しています。
 
-**開発の背景**: 本ツールは、イギリス(UK)から日本へのRemote SSH経由で接続された環境で開発・テストされました。これにより、遠隔地からのリモートワークフロー管理においても高い安定性を維持できることが実証されています。
+**開発の背景**: 本ツールは、イギリス(UK)から日本へのRemote SSH経由で接続された環境で開発・テストされました。これにより、遠隔地からのリモートワークフロー管理においても、数千から数万規模のアセットを安定して処理できることが実証されています。
 
 ---
 *Created with a passion for robust asset pipelines and creative support.*
