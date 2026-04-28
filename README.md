@@ -28,11 +28,11 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 
 ## 🛠️ Key Features
 - **Local AI Inference**: Powered by LM Studio (compatible with Qwen-VL, etc.), ensuring privacy and zero API costs.
+- **Intelligent Backlink Indexing**: Automatically identifies and lists every note or canvas in your Vault that references the image, preserving data relationships.
 - **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
 - **English-Only Metadata**: Generates all titles, tags, and descriptions in **English** for global standard indexing.
 - **Dynamic Descriptive Naming**: Renames sidecar files with meaningful English titles while preserving original image filenames for cross-reference.
 - **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes and optimize resource usage for large-scale processing.
-- **Obsidian-Ready Tags**: Enforces English, space-free tags (e.g., `video-game`) for robust global searchability.
 
 ---
 
@@ -42,9 +42,9 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 **Problem**: Processing high-resolution images on local VLMs often causes GPU memory exhaustion (OOM), especially during long-running batch operations.
 **Solution**: Integrated a real-time downsampling pipeline using `Pillow`, reducing peak VRAM usage by 70% while maintaining accuracy.
 
-### 2. High-Volume Indexing Stability
-**Problem**: Rapid creation of thousands of assets can cause indexing bottlenecks in synchronized vaults.
-**Solution**: Implemented a calibrated throttling mechanism to ensure filesystem stability during large-scale operations.
+### 2. Relational Data Integrity
+**Problem**: Traditional tagging loses the context of where an image is actually used within a knowledge base.
+**Solution**: Implemented a Vault-wide reverse-indexing engine that scans `.md` and `.canvas` files to build a backlink map, embedding these connections directly into the asset metadata.
 
 ---
 
@@ -64,7 +64,7 @@ Transforming raw visual data into structured metadata. Below is an example of a 
    ```bash
    pip install -r requirements.txt
    ```
-2. Update `ASSETS_DIR` in `obsidian_asset_tagger.py` to point to your image folder.
+2. Update `ASSETS_DIR` and `VAULT_DIR` in `obsidian_asset_tagger.py`.
 3. Run the script:
    ```bash
    python3 obsidian_asset_tagger.py
@@ -82,8 +82,8 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 ## 🇯🇵 日本語解説
 
 ### 📸 視覚的ビフォー・アフター
-1. **ライブラリ全体の整理（マクロ視点）**: 大量のファイルをAIが内容を理解した上でカテゴリ分け・命名します。
-2. **個別アセットの構造化（ミクロ視点）**: 生の画像データから、検索可能なメタデータ（タイトル、タグ、説明文）を自動生成し、Obsidian内の資産として取り込みます。
+1. **ライブラリ全体の整理**: 大量のファイルをAIが内容を理解した上でカテゴリ分け・命名します。
+2. **バックリンクの自動追跡**: その画像がVault内のどのノートやCanvasで使われているかを自動的にリスト化し、データの繋がりを可視化します。
 
 | Before: | After: |
 | :---: | :---: |
@@ -94,8 +94,6 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 
 ## ✍️ 設計哲学と背景
 世界的なゲーム開発の拠点である**エディンバラ（スコットランド）の技術水準に触発され**、そのプロフェッショナルなアセット管理の手法を個人のワークフローに導入することを目指して開発されました。
-
-**開発の背景**: 本ツールは、イギリス(UK)から日本へのRemote SSH経由で接続された環境で開発・テストされました。これにより、遠隔地からのリモートワークフロー管理においても、数千から数万規模のアセットを安定して処理できることが実証されています。
 
 ---
 *Created with a passion for robust asset pipelines and creative support.*
