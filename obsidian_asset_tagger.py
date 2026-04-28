@@ -2,15 +2,7 @@
 Obsidian AI Asset Tagger
 ========================
 Automated metadata generation pipeline for creative asset libraries using Local Vision-Language Models (VLM).
-
-Designed to transform thousands of unindexed images into a structured, searchable English-language database 
-with intelligent backlink tracking across the entire Obsidian Vault.
-
-Key Features:
-- Local AI Inference: Powered by LM Studio for privacy and zero API costs.
-- Intelligent Backlink Indexing: Scans the Vault to identify which notes reference each asset.
-- All-English Metadata: Generates professional titles, tags, and descriptions in English.
-- Resource Aware: Optimized in-memory resizing to handle massive high-res libraries.
+Supports both Batch Processing and Real-time Monitoring (Daemon Mode).
 """
 
 import os
@@ -20,6 +12,7 @@ import re
 import time
 import io
 import base64
+import argparse
 from datetime import datetime
 from pathlib import Path
 
@@ -28,6 +21,13 @@ try:
     HAS_PILLOW = True
 except ImportError:
     HAS_PILLOW = False
+
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+    HAS_WATCHDOG = True
+except ImportError:
+    HAS_WATCHDOG = False
 
 # --- CONFIGURATION ---
 API_URL = "http://localhost:1234/v1/chat/completions"
@@ -125,46 +125,51 @@ def format_linked_notes(notes):
     items = "\n".join(f'  - "[[{n}]]"' for n in notes)
     return f"\n{items}"
 
-def main():
-    if not os.path.exists(ASSETS_DIR):
-        print(f"Error: Directory {ASSETS_DIR} not found.")
-        return
-
-    backlink_index = build_backlink_index(VAULT_DIR)
-    img_files = sorted([f for f in os.listdir(ASSETS_DIR) if f.lower().endswith(IMAGE_EXTENSIONS)])
+def process_single_asset(filename, backlink_index):
+    """Processes a single image asset and creates its sidecar MD."""
+    base_name = os.path.splitext(filename)[0]
+    img_path = os.path.join(ASSETS_DIR, filename)
     
-    print(f"Processing {len(img_files)} assets...")
+    # Filter out self-references (sidecar files) from linked notes
+    linked = [n for n in backlink_index.get(filename, []) if not n.startswith(base_name)]
 
-    for filename in img_files:
-        base_name = os.path.splitext(filename)[0]
-        img_path = os.path.join(ASSETS_DIR, filename)
-        
-        # Filter out self-references (sidecar files) from linked notes
-        linked = [n for n in backlink_index.get(filename, []) if not n.startswith(base_name)]
-
-        # Check for existing sidecar with title
-        existing = [f for f in os.listdir(ASSETS_DIR) if f.startswith(base_name) and " - " in f]
-        if existing:
-            # Check if linked_notes needs update
+    # Strict matching to avoid collisions (e.g. image-1 vs image-11)
+    existing = [f for f in os.listdir(ASSETS_DIR) if f == f"{base_name}.md" or f.startswith(f"{base_name} - ")]
+    
+    if existing:
+        try:
             md_path = os.path.join(ASSETS_DIR, existing[0])
             with open(md_path, "r", encoding="utf-8") as f:
                 content = f.read()
-            if "linked_notes:" not in content:
-                print(f"Updating backlinks: {existing[0]}")
-                new_content = content.replace("---\n![[", f"linked_notes:{format_linked_notes(linked)}\n---\n![[", 1)
+            
+            # Check if linked_notes needs an update (relational integrity)
+            new_linked_block = f"linked_notes:{format_linked_notes(linked)}"
+            if "linked_notes:" in content:
+                match = re.search(r'linked_notes:\s*(.*?)(?=\n---|\n[a-z_]+:)', content, re.DOTALL)
+                if match and match.group(0).strip() != new_linked_block.strip():
+                    updated = content.replace(match.group(0), new_linked_block)
+                    with open(md_path, "w", encoding="utf-8") as f:
+                        f.write(updated)
+                    print(f"  -> Updated backlinks: {existing[0]}")
+            elif linked:
+                updated = content.replace("---\n![[", f"{new_linked_block}\n---\n![[", 1)
                 with open(md_path, "w", encoding="utf-8") as f:
-                    f.write(new_content)
-            continue
-        
-        print(f"Analyzing: {filename}")
-        analysis = analyze_image(img_path)
-        if not analysis: continue
+                    f.write(updated)
+                print(f"  -> Added backlinks: {existing[0]}")
+            return
+        except:
+            pass
+    
+    # If no valid English sidecar exists, perform AI analysis
+    print(f"Analyzing: {filename}")
+    analysis = analyze_image(img_path)
+    if not analysis: return
 
-        title = sanitize_filename(analysis.get('title', 'Untitled'))
-        tags = sanitize_tags(analysis.get('tags', []))
-        md_name = f"{base_name} - {title}.md"
-        
-        metadata = f"""---
+    title = sanitize_filename(analysis.get('title', 'Untitled'))
+    tags = sanitize_tags(analysis.get('tags', []))
+    md_name = f"{base_name} - {title}.md"
+    
+    metadata = f"""---
 title: {title}
 category: {analysis.get('category', 'Unclassified')}
 tags: {tags}
@@ -176,9 +181,57 @@ processed_at: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 
 {analysis.get('description', '')}
 """
-        with open(os.path.join(ASSETS_DIR, md_name), "w", encoding="utf-8") as f:
-            f.write(metadata)
-        print(f"  -> Created: {md_name}")
+    with open(os.path.join(ASSETS_DIR, md_name), "w", encoding="utf-8") as f:
+        f.write(metadata)
+    print(f"  -> Created: {md_name}")
+
+class AssetHandler(FileSystemEventHandler):
+    """Watches for new image files and triggers processing."""
+    def __init__(self, backlink_index):
+        self.backlink_index = backlink_index
+
+    def on_created(self, event):
+        if not event.is_directory and event.src_path.lower().endswith(IMAGE_EXTENSIONS):
+            filename = os.path.basename(event.src_path)
+            print(f"\n[Detected New Asset] {filename}")
+            time.sleep(2)  # Wait for file to be fully written
+            process_single_asset(filename, self.backlink_index)
+
+def main():
+    parser = argparse.ArgumentParser(description="Obsidian AI Asset Tagger")
+    parser.add_argument("--watch", action="store_true", help="Run in Daemon mode (continuous monitoring)")
+    args = parser.parse_args()
+
+    if not os.path.exists(ASSETS_DIR):
+        print(f"Error: Directory {ASSETS_DIR} not found.")
+        return
+
+    # Build index once at startup
+    backlink_index = build_backlink_index(VAULT_DIR)
+
+    if args.watch:
+        if not HAS_WATCHDOG:
+            print("Error: 'watchdog' library not found. Install it with: pip install watchdog")
+            return
+        print(f"\n--- Entering Daemon Mode ---")
+        print(f"Monitoring: {ASSETS_DIR}")
+        event_handler = AssetHandler(backlink_index)
+        observer = Observer()
+        observer.schedule(event_handler, ASSETS_DIR, recursive=False)
+        observer.start()
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            observer.stop()
+        observer.join()
+    else:
+        # Standard Batch Mode
+        img_files = sorted([f for f in os.listdir(ASSETS_DIR) if f.lower().endswith(IMAGE_EXTENSIONS)])
+        print(f"Processing {len(img_files)} assets in Batch Mode...")
+        for filename in img_files:
+            process_single_asset(filename, backlink_index)
+        print("\nBatch Processing Complete.")
 
 if __name__ == "__main__":
     main()

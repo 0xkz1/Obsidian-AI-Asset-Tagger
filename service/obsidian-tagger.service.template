@@ -1,0 +1,21 @@
+[Unit]
+Description=Obsidian AI Asset Tagger Daemon
+After=network.target
+
+[Service]
+# The user who will run the service
+User={{USER}}
+# Path to the project directory
+WorkingDirectory={{WORKDIR}}
+# Path to the python executable and the script with --watch flag
+ExecStart={{PYTHON_PATH}} {{WORKDIR}}/obsidian_asset_tagger.py --watch
+# Restart policy
+Restart=always
+RestartSec=10
+# Logging
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=obsidian-tagger
+
+[Install]
+WantedBy=multi-user.target
