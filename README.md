@@ -34,10 +34,10 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 
 ## 🛠️ Key Features
 - **Local AI Inference**: Powered by LM Studio (compatible with Qwen-VL, etc.), ensuring privacy and zero API costs.
+- **Continuous Monitoring (Daemon Mode)**: Uses `watchdog` to monitor your assets folder in real-time. New images are tagged automatically as soon as they are added.
 - **Intelligent Backlink Indexing**: Automatically identifies and lists every note or canvas in your Vault that references the image, preserving data relationships.
 - **Intelligent Sidecar Generation**: Automatically creates `.md` metadata files containing AI-generated categories, tags, and descriptions.
 - **English-Only Metadata**: Generates all titles, tags, and descriptions in **English** for global standard indexing.
-- **Dynamic Descriptive Naming**: Renames sidecar files with meaningful English titles while preserving original image filenames for cross-reference.
 - **VRAM Optimized**: In-memory resizing pipeline to prevent GPU crashes and optimize resource usage for large-scale processing.
 
 ---
@@ -52,29 +52,33 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 **Problem**: Traditional tagging loses the context of where an image is actually used within a knowledge base.
 **Solution**: Implemented a Vault-wide reverse-indexing engine that scans `.md` and `.canvas` files to build a backlink map, embedding these connections directly into the asset metadata.
 
+### 3. Production-Ready Deployment
+**Problem**: Running scripts manually is inefficient for daily workflows.
+**Solution**: Developed a `systemd` service integration and an automated `install.sh` script, allowing the tagger to run as a reliable background daemon on Linux environments.
+
 ---
 
 ## 🚀 Setup & Usage
 
-### 1. Requirements
-- [LM Studio](https://lmstudio.ai/) installed.
-- A Vision-Language Model (e.g., `Qwen2-VL` or `Qwen3-VL`) downloaded within LM Studio.
+### 1. Quick Install (Linux Service)
+To run the tagger as a permanent background service:
+```bash
+git clone https://github.com/0xkz1/Obsidian-AI-Asset-Tagger.git
+cd Obsidian-AI-Asset-Tagger
+chmod +x install.sh
+sudo ./install.sh
+```
 
-### 2. Preparation
-1. Open LM Studio and search for a VLM (e.g., `qwen2-vl-7b-instruct`).
-2. Download the model and load it.
-3. Start the **Local Server** in LM Studio (defaulting to `http://localhost:1234`).
+### 2. Manual Execution
+**Batch Mode (Process all images once):**
+```bash
+python3 obsidian_asset_tagger.py
+```
 
-### 3. Execution
-1. Clone this repository and install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-2. Update `ASSETS_DIR` and `VAULT_DIR` in `obsidian_asset_tagger.py`.
-3. Run the script:
-   ```bash
-   python3 obsidian_asset_tagger.py
-   ```
+**Watch Mode (Monitor for new images):**
+```bash
+python3 obsidian_asset_tagger.py --watch
+```
 
 ---
 
@@ -89,18 +93,8 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 
 ### 📸 視覚的ビフォー・アフター
 1. **ライブラリ全体の整理**: 大量のファイルをAIが内容を理解した上でカテゴリ分け・命名します。
-2. **バックリンクの自動追跡**: その画像がVault内のどのノートやCanvasで使われているかを自動的にリスト化し、データの繋がりを可視化します。
-
-**整理前:**
-![Before](Sample/before_directory.png)
-
-**整理後:**
-![After](Sample/after_directory.png)
-
----
-
-## ✍️ 設計哲学と背景
-世界的なゲーム開発の拠点である**エディンバラ（スコットランド）の技術水準に触発され**、そのプロフェッショナルなアセット管理の手法を個人のワークフローに導入することを目指して開発されました。
+2. **リアルタイム監視（常駐モード）**: `watchdog` を使用してフォルダを監視し、画像を追加した瞬間に自動でタグ付けを行います。
+3. **バックリンクの自動追跡**: その画像がVault内のどのノートやCanvasで使われているかを自動的にリスト化します。
 
 ---
 *Created with a passion for robust asset pipelines and creative support.*
