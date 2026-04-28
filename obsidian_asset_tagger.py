@@ -3,13 +3,14 @@ Obsidian AI Asset Tagger
 ========================
 Automated metadata generation pipeline for creative asset libraries using Local Vision-Language Models (VLM).
 
-Designed to transform thousands of unindexed images into a structured, searchable English-language database.
+Designed to transform thousands of unindexed images into a structured, searchable English-language database 
+with intelligent backlink tracking across the entire Obsidian Vault.
 
 Key Features:
-- Local Inference: Uses LM Studio (compatible with Qwen-VL) for privacy and speed.
-- All-English Metadata: Generates titles, tags, and descriptions exclusively in English.
-- Asset Pipeline: High-performance in-memory processing to handle massive libraries.
-- Remote Ready: Developed via SSH from UK to Japan, optimized for remote management.
+- Local AI Inference: Powered by LM Studio for privacy and zero API costs.
+- Intelligent Backlink Indexing: Scans the Vault to identify which notes reference each asset.
+- All-English Metadata: Generates professional titles, tags, and descriptions in English.
+- Resource Aware: Optimized in-memory resizing to handle massive high-res libraries.
 """
 
 import os
@@ -31,25 +32,48 @@ except ImportError:
 # --- CONFIGURATION ---
 API_URL = "http://localhost:1234/v1/chat/completions"
 ASSETS_DIR = "/home/kz003/atelier/obsidian-vault/11_assets_OB"
+VAULT_DIR = "/home/kz003/atelier/obsidian-vault"
 MODEL_ID = "qwen/qwen3-vl-8b"
 MAX_IMAGE_SIZE = 768
 # ---------------------
 
 IMAGE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif')
+NOTE_EXTENSIONS = ('.md', '.canvas')
+
+def build_backlink_index(vault_dir):
+    """Scans the Vault and builds a reverse index of image references."""
+    print("Building backlink index across Vault...")
+    index = {}
+    for root, dirs, files in os.walk(vault_dir):
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        for fname in files:
+            if not any(fname.endswith(ext) for ext in NOTE_EXTENSIONS):
+                continue
+            fpath = os.path.join(root, fname)
+            try:
+                with open(fpath, "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read()
+                links = re.findall(r'\[\[([^\]|#]+)', content)
+                for link in links:
+                    link_base = os.path.basename(link.strip())
+                    if link_base not in index:
+                        index[link_base] = []
+                    note_name = os.path.splitext(fname)[0]
+                    if note_name not in index[link_base]:
+                        index[link_base].append(note_name)
+            except:
+                continue
+    return index
 
 def sanitize_filename(name):
-    """Clean filename for cross-platform compatibility."""
-    name = re.sub(r'[\\/*?:"<>|]', "", name)
-    return name.strip()
+    return re.sub(r'[\\/*?:"<>|]', "", name).strip()
 
 def sanitize_tags(tags):
-    """Format tags for Obsidian (lowercase, no spaces, use hyphens)."""
     if isinstance(tags, list):
         return [tag.strip().replace(" ", "-").lower() for tag in tags if tag]
     return []
 
 def encode_image_resized(image_path):
-    """Resize image and convert to Base64."""
     if not HAS_PILLOW:
         with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode('utf-8')
@@ -66,10 +90,8 @@ def encode_image_resized(image_path):
         return None
 
 def analyze_image(image_path):
-    """Analyze image using local VLM API."""
     base64_data = encode_image_resized(image_path)
-    if not base64_data:
-        return None
+    if not base64_data: return None
 
     prompt = """
 Analyze this image and provide a structured English classification:
@@ -82,15 +104,10 @@ Output ONLY JSON format. All values must be in English.
 """
     payload = {
         "model": MODEL_ID,
-        "messages": [
-            {
-                "role": "user",
-                "content": [
-                    {"type": "text", "text": prompt},
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_data}"}}
-                ]
-            }
-        ],
+        "messages": [{"role": "user", "content": [
+            {"type": "text", "text": prompt},
+            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_data}"}}
+        ]}],
         "temperature": 0.2
     }
 
@@ -98,56 +115,70 @@ Output ONLY JSON format. All values must be in English.
         response = requests.post(API_URL, json=payload, timeout=60)
         content = response.json()['choices'][0]['message']['content']
         match = re.search(r'\{.*\}', content, re.DOTALL)
-        if match:
-            return json.loads(match.group())
-    except Exception as e:
-        print(f"  [API Error] {e}")
+        if match: return json.loads(match.group())
+    except:
+        pass
     return None
+
+def format_linked_notes(notes):
+    if not notes: return "[]"
+    items = "\n".join(f'  - "[[{n}]]"' for n in notes)
+    return f"\n{items}"
 
 def main():
     if not os.path.exists(ASSETS_DIR):
         print(f"Error: Directory {ASSETS_DIR} not found.")
         return
 
-    files = sorted([f for f in os.listdir(ASSETS_DIR) if f.lower().endswith(IMAGE_EXTENSIONS)])
-    print(f"Syncing {len(files)} assets (English Pipeline)...")
+    backlink_index = build_backlink_index(VAULT_DIR)
+    img_files = sorted([f for f in os.listdir(ASSETS_DIR) if f.lower().endswith(IMAGE_EXTENSIONS)])
+    
+    print(f"Processing {len(img_files)} assets...")
 
-    for filename in files:
+    for filename in img_files:
         base_name = os.path.splitext(filename)[0]
         img_path = os.path.join(ASSETS_DIR, filename)
         
-        # Check if MD file exists
-        existing_md = [f for f in os.listdir(ASSETS_DIR) if f.startswith(base_name) and f.endswith(".md")]
-        if existing_md:
-            # For brevity, this version skips existing titled files.
-            # In your local scratch script, we added logic to 'fix' Japanese.
-            if " - " in existing_md[0]:
-                continue
+        # Filter out self-references (sidecar files) from linked notes
+        linked = [n for n in backlink_index.get(filename, []) if not n.startswith(base_name)]
+
+        # Check for existing sidecar with title
+        existing = [f for f in os.listdir(ASSETS_DIR) if f.startswith(base_name) and " - " in f]
+        if existing:
+            # Check if linked_notes needs update
+            md_path = os.path.join(ASSETS_DIR, existing[0])
+            with open(md_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            if "linked_notes:" not in content:
+                print(f"Updating backlinks: {existing[0]}")
+                new_content = content.replace("---\n![[", f"linked_notes:{format_linked_notes(linked)}\n---\n![[", 1)
+                with open(md_path, "w", encoding="utf-8") as f:
+                    f.write(new_content)
+            continue
         
-        print(f"Analyzing: {filename}...")
+        print(f"Analyzing: {filename}")
         analysis = analyze_image(img_path)
         if not analysis: continue
 
         title = sanitize_filename(analysis.get('title', 'Untitled'))
         tags = sanitize_tags(analysis.get('tags', []))
-        md_filename = f"{base_name} - {title}.md"
+        md_name = f"{base_name} - {title}.md"
         
         metadata = f"""---
 title: {title}
 category: {analysis.get('category', 'Unclassified')}
 tags: {tags}
 cover: "{filename}"
+linked_notes:{format_linked_notes(linked)}
 processed_at: {datetime.now().strftime("%Y-%m-%d %H:%M")}
 ---
 ![[{filename}]]
 
 {analysis.get('description', '')}
 """
-        with open(os.path.join(ASSETS_DIR, md_filename), "w", encoding="utf-8") as f:
+        with open(os.path.join(ASSETS_DIR, md_name), "w", encoding="utf-8") as f:
             f.write(metadata)
-        
-        print(f"  -> Created: {md_filename}")
-        time.sleep(0.1)
+        print(f"  -> Created: {md_name}")
 
 if __name__ == "__main__":
     main()
