@@ -13,16 +13,25 @@ An automated metadata generation pipeline for massive creative asset libraries. 
 ### 1. Library-Scale Transformation (Macro View)
 Automatically renaming and indexing thousands of generic filenames (e.g., `Pasted image...`) into a categorized, searchable library.
 
-| Before: Unorganized Files | After: Structured Library |
-| :---: | :---: |
-| <img src="Sample/before_directory.png" width="450"> | <img src="Sample/after_directory.png" width="450"> |
+#### ❌ Before: Unorganized Generic Filenames
+No context, difficult to search, and cluttered filesystem.
+![Before Directory](Sample/before_directory.png)
+
+#### ✅ After: Categorized & Searchable Library
+AI-driven English titles and sidecar metadata for every asset.
+![After Directory](Sample/after_directory.png)
+
+---
 
 ### 2. Asset Enrichment (Micro View)
-Transforming raw visual data into structured metadata. Below is an example of a **Fox Photo** being analyzed and embedded into a Sidecar MD file with AI-generated tags and titles.
+Transforming raw visual data into structured metadata. Below is an example of a **Fox Photo** being analyzed and embedded into a Sidecar MD file with AI-generated tags, descriptions, and backlink tracking.
 
-| Input: Raw Image Asset | Output: Structured Sidecar MD |
-| :---: | :---: |
-| <img src="Sample/before_fox_image.png" width="450"> | <img src="Sample/after_fox_image.png" width="450"> |
+#### 🦊 Example: From Raw Asset to Knowledge
+**Input Image:**
+<img src="Sample/before_fox_image.png" width="600">
+
+**Generated Sidecar Metadata (Side-by-Side):**
+<img src="Sample/after_fox_image.png" width="600">
 
 ---
 
@@ -85,10 +94,11 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 1. **ライブラリ全体の整理**: 大量のファイルをAIが内容を理解した上でカテゴリ分け・命名します。
 2. **バックリンクの自動追跡**: その画像がVault内のどのノートやCanvasで使われているかを自動的にリスト化し、データの繋がりを可視化します。
 
-| Before: | After: |
-| :---: | :---: |
-| <img src="Sample/before_directory.png" width="450"> | <img src="Sample/after_directory.png" width="450"> |
-| <img src="Sample/before_fox_image.png" width="450"> | <img src="Sample/after_fox_image.png" width="450"> |
+**整理前:**
+![Before](Sample/before_directory.png)
+
+**整理後:**
+![After](Sample/after_directory.png)
 
 ---
 
