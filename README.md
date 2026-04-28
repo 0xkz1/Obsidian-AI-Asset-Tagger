@@ -26,12 +26,9 @@ AI-driven English titles and sidecar metadata for every asset.
 ### 2. Asset Enrichment (Micro View)
 Transforming raw visual data into structured metadata. Below is an example of a **Fox Photo** being analyzed and embedded into a Sidecar MD file with AI-generated tags, descriptions, and backlink tracking.
 
-#### 🦊 Example: From Raw Asset to Knowledge
-**Input Image:**
-<img src="Sample/before_fox_image.png" width="600">
-
-**Generated Sidecar Metadata (Side-by-Side):**
-<img src="Sample/after_fox_image.png" width="600">
+| Input: Raw Image Asset | Output: Structured Sidecar MD |
+| :---: | :---: |
+| <img src="Sample/before_fox_image.png" width="450"> | <img src="Sample/after_fox_image.png" width="450"> |
 
 ---
 
