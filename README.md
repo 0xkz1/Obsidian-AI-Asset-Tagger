@@ -81,6 +81,10 @@ SORT file.ctime DESC
 4. **Links** to the full metadata file for each asset
 
 ### Sample Result
+
+Here's an example of what your Dataview gallery looks like with `#animal` tagged assets:
+![Animal Gallery Example](Sample/gallery_animal.png)
+
 See `Sample/dataview_animal_gallery_example.md` for a complete working example.
 
 > **Tip**: The AI tagger automatically adds tags like `#animal`, `#landscape`, `#portrait`, etc. to your image metadata. Use Dataview to build custom views!
