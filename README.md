@@ -58,6 +58,35 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 
 ---
 
+## 🖼️ Dataview Gallery Example
+
+After the AI tagger processes your images, you can use **Dataview** to create smart galleries. Here's how to query images tagged with `#animal`:
+
+### Example Query (Dataview)
+
+```dataview
+TABLE without id
+"![[" & file.cover & "|300]]" as Cover,
+file.link as Name,
+file.tags as Tags
+FROM "11_assets_OB"
+WHERE contains(file.tags, "animal")
+SORT file.ctime DESC
+```
+
+### What This Does
+1. **Scans** all `.md` sidecar files in `11_assets_OB/`
+2. **Filters** for files containing `#animal` in their tags
+3. **Displays** a gallery with cover images (300px width)
+4. **Links** to the full metadata file for each asset
+
+### Sample Result
+See `Sample/dataview_animal_gallery_example.md` for a complete working example.
+
+> **Tip**: The AI tagger automatically adds tags like `#animal`, `#landscape`, `#portrait`, etc. to your image metadata. Use Dataview to build custom views!
+
+---
+
 ## 🚀 Setup & Usage
 
 ### 1. Quick Install (Linux Service)
