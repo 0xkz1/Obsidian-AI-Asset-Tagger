@@ -117,6 +117,7 @@ python3 obsidian_asset_tagger.py --watch
 
 ## ✍️ Philosophy & Background
 This pipeline is designed with careful consideration for creative workflows, with the goal of applying production-grade asset management practices to individual knowledge bases.
+
 Developer Note: Development and testing were conducted over a Remote SSH connection between the UK and a GPU workstation in Japan. This configuration was used to verify that the pipeline maintains stable performance under remote management and variable network conditions.
 
 ---
