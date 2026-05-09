@@ -116,9 +116,8 @@ python3 obsidian_asset_tagger.py --watch
 ---
 
 ## ✍️ Philosophy & Background
-The design of this pipeline is rooted in a deep respect for creative workflows. **Inspired by the world-class technical standards of Edinburgh's creative tech community**, this project aims to bring production-grade asset management to the individual's knowledge base.
-
-**Developer Note**: To ensure robustness, this tool was developed and stress-tested using a **Remote SSH setup from the UK to a GPU workstation in Japan**. This ensured the pipeline remains performant even under remote management and international network fluctuations.
+This pipeline is designed with careful consideration for creative workflows, with the goal of applying production-grade asset management practices to individual knowledge bases.
+Developer Note: Development and testing were conducted over a Remote SSH connection between the UK and a GPU workstation in Japan. This configuration was used to verify that the pipeline maintains stable performance under remote management and variable network conditions.
 
 ---
 
@@ -160,10 +159,10 @@ The design of this pipeline is rooted in a deep respect for creative workflows. 
 
 ---
 
-### ✍️ 設計哲学と背景
-世界的なゲーム開発の拠点である**エディンバラ（スコットランド）の技術水準に触発され**、そのプロフェッショナルなアセット管理の手法を個人のワークフローに導入することを目指して開発されました。
+### ✍️ 設計思想と背景
+本パイプラインは、クリエイティブワークフローへの配慮を重視して設計されており、プロダクションレベルのアセット管理手法を個人のナレッジベースに適用することを目的としています。
 
-**開発の背景**: 本ツールは、イギリス(UK)から日本へのRemote SSH経由で接続された環境で開発・テストされました。これにより、遠隔地からのリモートワークフロー管理においても、数千から数万規模のアセットを安定して処理できることが実証されています。
+開発者メモ: 開発およびテストは、英国から日本のGPUワークステーションへのリモートSSH接続環境下で実施しました。この構成により、リモート管理および不安定なネットワーク環境下でもパイプラインが安定して動作することを確認しています。
 
 ---
 *Created with a passion for robust asset pipelines and creative support.*
