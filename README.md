@@ -1,4 +1,4 @@
-# Obsidian AI Asset Tagger 🚀
+# Obsidian AI Asset Tagger
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![AI](https://img.shields.io/badge/Local--AI-VLM-green.svg)](https://lmstudio.ai/)
@@ -6,18 +6,22 @@
 
 An automated metadata generation pipeline for massive creative asset libraries. This tool transforms thousands to tens of thousands of unindexed images into a structured, searchable English-language database using local Vision-Language Models (VLM).
 
+## Successor Project
+This repository evolved into the **AssetWeaver** Obsidian plugin. For the most up-to-date and integrated experience, please use the plugin version:
+https://github.com/0xkz1/obsidian-asset-weaver
+
 ---
 
-## 📸 Visual Evidence: The Workflow
+## Visual Evidence: The Workflow
 
 ### 1. Library-Scale Transformation (Macro View)
 Automatically renaming and indexing thousands of generic filenames (e.g., `Pasted image...`) into a categorized, searchable library.
 
-#### ❌ Before: Unorganized Generic Filenames
+#### Before: Unorganized Generic Filenames
 No context, difficult to search, and cluttered filesystem.
 ![Before Directory](Sample/before_directory.png)
 
-#### ✅ After: Categorized & Searchable Library
+#### After: Categorized & Searchable Library
 AI-driven English titles and sidecar metadata for every asset.
 ![After Directory](Sample/after_directory.png)
 
@@ -32,7 +36,7 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 
 ---
 
-## 🛠️ Key Features
+## Key Features
 - **Local AI Inference**: Powered by LM Studio (compatible with Qwen-VL, etc.), ensuring privacy and zero API costs.
 - **Continuous Monitoring (Daemon Mode)**: Uses `watchdog` to monitor your assets folder in real-time. New images are tagged automatically as soon as they are added.
 - **Intelligent Backlink Indexing**: Automatically identifies and lists every note or canvas in your Vault that references the image, preserving data relationships.
@@ -42,7 +46,7 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 
 ---
 
-## 🏗️ Technical Challenges & Solutions
+## Technical Challenges & Solutions
 
 ### 1. Resource Constraint Management
 **Problem**: Processing high-resolution images on local VLMs often causes GPU memory exhaustion (OOM), especially during long-running batch operations.
@@ -58,7 +62,7 @@ Transforming raw visual data into structured metadata. Below is an example of a 
 
 ---
 
-## 🖼️ Dataview Gallery Example
+## Dataview Gallery Example
 
 After the AI tagger processes your images, you can use **Dataview** to create smart galleries. Here's how to query images tagged with `#animal`:
 
@@ -91,7 +95,7 @@ See `Sample/dataview_animal_gallery_example.md` for a complete working example.
 
 ---
 
-## 🚀 Setup & Usage
+## Setup & Usage
 
 ### 1. Quick Install (Linux Service)
 To run the tagger as a permanent background service:
@@ -115,16 +119,16 @@ python3 obsidian_asset_tagger.py --watch
 
 ---
 
-## ✍️ Philosophy & Background
+## Philosophy & Background
 This pipeline is designed with careful consideration for creative workflows, with the goal of applying production-grade asset management practices to individual knowledge bases.
 
 Developer Note: Development and testing were conducted over a Remote SSH connection between the UK and a GPU workstation in Japan. This configuration was used to verify that the pipeline maintains stable performance under remote management and variable network conditions.
 
 ---
 
-## 🇯🇵 日本語解説
+## 日本語解説
 
-### 📸 視覚的ビフォー・アフター
+### 視覚的ビフォー・アフター
 1. **ライブラリ全体の整理**: 大量の「意味のないファイル名」をAIが解析し、カテゴリ分けと命名を自動で行います。
 2. **個別アセットの構造化**: 生の画像データから、検索可能なメタデータ（タイトル、タグ、説明文）を自動生成し、Obsidian内の資産として取り込みます。
 
@@ -136,7 +140,7 @@ Developer Note: Development and testing were conducted over a Remote SSH connect
 
 ---
 
-### 🛠️ 主な機能
+### 主な機能
 - **ローカルAI推論**: LM Studioを活用し、プライベートな環境でコストをかけずに解析を実行。
 - **リアルタイム監視（常駐モード）**: `watchdog` ライブラリを使用してフォルダを監視。画像を追加した瞬間に自動でタグ付けを行います。
 - **インテリジェントなバックリンク追跡**: Vault内（.md / .canvas）をスキャンし、その画像がどのノートで使われているかを自動的にリスト化します。
@@ -145,14 +149,14 @@ Developer Note: Development and testing were conducted over a Remote SSH connect
 
 ---
 
-### 🏗️ 技術的課題と解決策
+### 技術的課題と解決策
 1. **リソース管理**: 高解像度画像の一括処理によるVRAM不足を回避するため、Pillowによるダウンサンプリングを実装し、メモリ使用量を約70%削減しました。
 2. **データの整合性**: 従来のタグ付けでは失われがちだった「画像がどこで使われているか」という文脈を維持するため、Vault全体の逆引きインデックス機能を構築しました。
 3. **運用の自動化**: 手動実行の手間を省くため、Linuxの `systemd` への登録を自動化する `install.sh` を開発しました。
 
 ---
 
-### 🚀 セットアップと使用方法
+### セットアップと使用方法
 1. **自動インストール（Linux常駐サービス）**:
    `sudo ./install.sh` を実行するだけで、バックグラウンドで常に動作するようになります。
 2. **手動実行**:
@@ -160,7 +164,7 @@ Developer Note: Development and testing were conducted over a Remote SSH connect
 
 ---
 
-### ✍️ 設計思想と背景
+### 設計思想と背景
 本パイプラインは、クリエイティブワークフローへの配慮を重視して設計されており、プロダクションレベルのアセット管理手法を個人のナレッジベースに適用することを目的としています。
 
 開発者メモ: 開発およびテストは、英国から日本のGPUワークステーションへのリモートSSH接続環境下で実施しました。この構成により、リモート管理および不安定なネットワーク環境下でもパイプラインが安定して動作することを確認しています。
